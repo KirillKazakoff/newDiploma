@@ -2,14 +2,16 @@
  * Класс CreateTransactionForm управляет формой
  * создания новой транзакции
  * */
+
 class CreateTransactionForm extends AsyncForm {
   /**
    * Вызывает родительский конструктор и
    * метод renderAccountsList
    * */
-  constructor(element) {
+  
+//   constructor(element) {
 
-  }
+//   }
 
   /**
    * Получает список счетов с помощью Account.list

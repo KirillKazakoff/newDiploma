@@ -12,38 +12,53 @@ class AsyncForm {
    * Сохраняет переданный элемент и регистрирует события
    * через registerEvents()
    * */
-  constructor(element) {
+    constructor(element) {
+        try {
+            if (!element) throw new Error("empty data")
+        }
+        catch(e) {
+            console.log(e.message)
+        }
+        this.element = element;
+        this.registerEvents();
+    }
 
-  }
+    /**
+     * Необходимо запретить отправку формы и в момент отправки
+     * вызывает метод submit()
+     * */
+    registerEvents() {
+        this.element.addEventListener("submit", (e) => {
+            //Проверка данных здеся
+            e.preventDefault();
+            this.submit()
+        })
+        
+    }
 
-  /**
-   * Необходимо запретить отправку формы и в момент отправки
-   * вызывает метод submit()
-   * */
-  registerEvents() {
+    
+    /**
+     * Преобразует данные формы в объект вида
+     * {
+     *  'название поля формы 1': 'значение поля формы 1',
+     *  'название поля формы 2': 'значение поля формы 2'
+     * }
+     * */
+    getData() {
+        //entries
+        return new FormData(this.element);
+    }
 
-  }
+    onSubmit(options){
 
-  /**
-   * Преобразует данные формы в объект вида
-   * {
-   *  'название поля формы 1': 'значение поля формы 1',
-   *  'название поля формы 2': 'значение поля формы 2'
-   * }
-   * */
-  getData() {
+    }
 
-  }
-
-  onSubmit(options){
-
-  }
-
-  /**
-   * Вызывает метод onSubmit и передаёт туда
-   * данные, полученные из метода getData()
-   * */
-  submit() {
-
-  }
+    /**
+     * Вызывает метод onSubmit и передаёт туда
+     * данные, полученные из метода getData()
+     * */
+    submit() {
+        const data = this.getData();
+        this.onSubmit(data)
+    }
 }
