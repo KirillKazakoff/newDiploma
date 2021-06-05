@@ -1,4 +1,6 @@
 "use strict"
+
+
 /**
  * Класс Entity - базовый для взаимодействия с сервером.
  * Имеет свойство URL, равно пустой строке.
@@ -13,10 +15,9 @@ class Entity {
     static list(data, callback) {
         createRequest({
             method: "GET",
-            body: data,
-            responseType: "json",
             callback: callback,
-            url: this.URL
+            url: this.URL,
+            data
         })
     }
 
@@ -35,25 +36,24 @@ class Entity {
     //     })
     // }
 
-    static create(data) {
+    static create(data, callback) {
         createRequest({
             method: "PUT",
-            body: data,
-            responseType: "json",
-            url: this.URL
+            url: this.URL,
+            callback: callback,
+            data
         })
     }
   /**
    * Удаляет информацию о счёте или доходе/расходе
    * (в зависимости от того, что наследуется от Entity)
    * */
-    static remove(data, callback ) {
+    static remove(data, callback) {
         createRequest({
             method: "DELETE",
-            body: data,
-            responseType: "json",
             callback: callback,
-            url: this.URL
+            url: this.URL,
+            data
         })
     }
 }

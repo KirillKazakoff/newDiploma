@@ -1,3 +1,4 @@
+"use strict"
 /**
  * Класс User управляет авторизацией, выходом и
  * регистрацией пользователя из приложения
@@ -12,8 +13,7 @@ class User {
      * локальном хранилище.
      * */
     static setCurrent(user) {
-        const data = JSON.stringify(user);
-        localStorage.setItem('user', data);
+        localStorage.setItem('user', JSON.stringify(user));
     }
 
     /**
@@ -21,7 +21,7 @@ class User {
      * пользователе из локального хранилища.
      * */
     static unsetCurrent() {
-        localStorage.removeItem('user')
+        localStorage.removeItem('user');
     }
 
     /**
@@ -36,17 +36,16 @@ class User {
    * Получает информацию о текущем
    * авторизованном пользователе.
    * */
-    static fetch(callback) {
+    static fetch(callback = myCallback()) {
         createRequest({
             url: this.URL + '/current',
             method: 'GET',
-            responseType: 'json',
             callback: (err, response) => {
                 if (response && response.user) {
                     this.setCurrent(response.user);
                 }
                 else this.unsetCurrent();
-                callback(err, response)
+                callback(err, response);
             },
         })
     }
@@ -61,7 +60,6 @@ class User {
         createRequest({
             url: this.URL + '/login',
             method: 'POST',
-            responseType: 'json',
             data,
             callback: (err, response) => {
                 if (response && response.user) {
@@ -81,7 +79,6 @@ class User {
     static register(data, callback) {
         createRequest({
             method: "POST",
-            responseType: "json",
             url: this.URL + "/register",            
             callback: (err, response) => {
                 if (response && response.user) {
@@ -100,13 +97,12 @@ class User {
     static logout(data, callback) {
         createRequest({
             method: "POST",
-            responseType: "json",
             url: this.URL + "/logout",
             callback: (err, response) => {
-                if (response && response.user) {
+                if (response) {
                     this.unsetCurrent(response.user)
                 }
-                callback(err, response)
+                callback(err, response);
             },
             data, 
         })
@@ -114,19 +110,6 @@ class User {
 
 }
 
-// const formData = new FormData();
-// const data = {
-//     name: 'Vlada2',
-//     email: 'sestest3@test.ru',
-//     password: 'abracadabra'
-// }
-// for (prop in data) {
-//     formData.append(prop, data[prop])
-// }
-
-// User.register(formData, myCallback())
-// User.login(formData, myCallback());
-
-// function myCallback() {
-//     return (err, response) => err ? console.log(err) : console.log(response);
-// }
+function myCallback() {
+    return (err, response) => err ? console.log(err) : console.log(response);
+}

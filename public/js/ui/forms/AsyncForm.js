@@ -1,3 +1,4 @@
+"use strict"
 /**
  * Класс AsyncForm управляет всеми формами
  * приложения, которые не должны быть отправлены с
@@ -13,11 +14,8 @@ class AsyncForm {
    * через registerEvents()
    * */
     constructor(element) {
-        try {
-            if (!element) throw new Error("empty data")
-        }
-        catch(e) {
-            console.log(e.message)
+        if (!element) {
+            throw new Error("empty data");
         }
         this.element = element;
         this.registerEvents();
@@ -29,9 +27,8 @@ class AsyncForm {
      * */
     registerEvents() {
         this.element.addEventListener("submit", (e) => {
-            //Проверка данных здеся
             e.preventDefault();
-            this.submit()
+            this.submit();
         })
         
     }

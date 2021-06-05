@@ -1,3 +1,5 @@
+"use strict"
+
 const router = require("express").Router();
 const multer  = require('multer');
 const upload = multer();
@@ -16,13 +18,17 @@ router.put("/", upload.none(), function(request, response) {
     const db = low(new FileSync('db.json'));// получение БД
     let user = db.get("users").find({id: request.session.id});// поиск авторизованного пользователя
     let userValue = user.value();// получение значения авторизованного пользователя
-    if(!userValue){
+    if (!userValue){
         response.json({success: false, error: "Пользователь не авторизован"});// отправка ответа с данными
         return;
     }
 
-    const createdAccount = db.get("accounts").find({name}).value();
-    if(createdAccount){
+    //Здесь нужна проверка на userId
+    // const createdAccount = db.get("accounts").find({name}).value();
+    const createdAccount = db.get("accounts").
+    find(element => element.name == name && element.user_id == userValue.id).value();
+
+    if (createdAccount) {
         response.json({success: false, error: "Счёт с таким именем уже существует"});
         return;
     }
@@ -38,11 +44,12 @@ router.delete("/", upload.none(), function(request, response) {
     let accounts = db.get("accounts");// получение списка счетов
     let transactions = db.get("transactions");// получение списка счетов
     let removingAccount = accounts.find({id: request.body.id}).value();// нахождение нужного удаляемого счёта
-    if(removingAccount){// если удаляемый аккаунт существует
+
+    if (removingAccount) {// если удаляемый аккаунт существует
         accounts.remove({id: request.body.id}).write();// удалить и перезаписать аккаунт
         transactions.remove({account_id: request.body.id}).write(); // удалить связанные транзакции и перезаписать
         response.json({success: true});// отправка ответа успешности
-    }else{// если аккаунта нету
+    } else {// если аккаунта нету
         response.json({success: false});// отправка ответа неуспешности
     }
 });
@@ -55,16 +62,18 @@ router.get("/:id?", upload.none(), function(request, response) {
     let user = db.get("users").find({id});
     let userValue = user.value();
 
-    if(!userValue){
-      response.json({success: false, error:"Пользователь не авторизован"});
-      return;
+    if (!userValue){
+        response.json({success: false, error:"Пользователь не авторизован"});
+        return;
     }
-
+    
     let accountId = request.params.id;
+    
 
-    if(accountId){
+    if (accountId) {
         let currentAccount = db.get("accounts").find({id: accountId}).value();
-        if(!currentAccount){
+        
+        if (!currentAccount) {
           response.json({success: false, error: `Счёт c идентификатором ${accountId} не найден`});
           return;
         }
@@ -73,7 +82,7 @@ router.get("/:id?", upload.none(), function(request, response) {
         response.json({success: true, data: currentAccount});
     } else {
         let accounts = db.get("accounts").filter({user_id:userValue.id}).value();
-        for(let i = 0; i < accounts.length; i++){
+        for (let i = 0; i < accounts.length; i++){
             let transactions = db.get("transactions").filter({account_id: accounts[i].id}).value();
             accounts[i].sum = transactions.reduce((sum, a) => a.type === "expense" ? sum - a.sum : sum + a.sum, 0);
         }

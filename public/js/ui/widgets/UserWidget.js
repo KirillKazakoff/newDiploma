@@ -12,13 +12,10 @@ class UserWidget {
    * необходимо выкинуть ошибку.
    * */
     constructor(element){
-        try {
-            if (!element) throw new Error("empty data");
-            this.element = element;
+        if (!element) {
+            throw new Error("empty data");
         }
-        catch(e) {
-            console.log(e.message);
-        }
+        this.element = element;
     }
 
   /**
@@ -31,6 +28,8 @@ class UserWidget {
     update(){
         const {name} = User.current();
         const nameHTML = document.querySelector(".user-name");
-        if (name) nameHTML.textContent = name;
+        if (name) {
+            nameHTML.textContent = name;
+        }
     }
 }

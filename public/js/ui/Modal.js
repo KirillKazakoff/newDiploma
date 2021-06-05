@@ -1,3 +1,4 @@
+"use strict"
 /**
  * Класс Modal отвечает за
  * управление всплывающими окнами.
@@ -12,14 +13,11 @@ class Modal {
    * необходимо выкинуть ошибку.
    * */
     constructor(element) { 
-        try {
-            if (!element) throw new Error("empty object")
-            this.element = element;
-            this.registerEvents();
+        if (!element) {
+            throw new Error("empty object");
         }
-        catch(e) {
-            console.log(e.message);
-        }
+        this.element = element;
+        this.registerEvents();
     }
 
 
@@ -31,9 +29,6 @@ class Modal {
     registerEvents() {
         const buttons = Array.from(this.element.querySelectorAll('button[data-dismiss="modal"]'));
 
-        // buttons.forEach(button => button.addEventListener("click", (e) => {
-        //     if (button["data-dismiss"]) this.onClose(e);
-        // }))
         buttons.forEach(button => button.addEventListener("click", this.onClose.bind(this)))
     }
 
