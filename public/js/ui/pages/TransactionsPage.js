@@ -28,7 +28,7 @@ class TransactionsPage {
     update() {
         if (this.lastOption) {
             const account_id = this.lastOption;
-            this.render({account_id});
+            this.render({account_id})
         }
     }
 
@@ -53,37 +53,51 @@ class TransactionsPage {
    * либо обновляйте только виджет со счетами
    * для обновления приложения
    * */
+    // removeAccount() {
+    //     if (this.lastOption) {
+            
+    //         if (confirm("Вы точно хотите удалить счёт?")) {
+    //             const formData = new FormData();
+
+    //             formData.append("id", this.lastOption);
+    //             Account.remove(formData, (err) => {
+    //                 if (!err) {
+    //                     this.clear();
+    //                     App.updateWidgets();
+    //                 }
+    //             });
+                
+    //         }
+    //     }
+    // }
+    
     removeAccount() {
         if (this.lastOption) {
             
-            if (confirm("Вы точно хотите удалить счёт?")) {
-                const formData = new FormData();
+            const formData = new FormData();
 
-                formData.append("id", this.lastOption);
-                Account.remove(formData, (err) => {
-                    if (!err) {
-                        this.clear();
-                        App.updateWidgets();
-                    }
-                });
-                
-            }
+            formData.append("id", this.lastOption);
+            Account.remove(formData, (err) => {
+                if (!err) {
+                    this.clear();
+                    App.updateWidgets();
+                }
+            });    
+            
         }
     }
-
   /**
    * Удаляет транзакцию (доход или расход). Требует
    * подтверждеия действия (с помощью confirm()).
    * По удалению транзакции вызовите метод App.update(),
    * либо обновляйте текущую страницу (метод update) и виджет со счетами
    * */
-    removeTransaction(ide) {
+    removeTransaction(id) {
         if (confirm("Вы действительно хотите удалить эту транзакцию?")) {
             const something = new FormData();
-            something.append("id", ide);
-            Transaction.remove(something, (err, response) => {
+            something.append("id", id);
+            Transaction.remove(something, (err) => {
                 if (!err) {
-                    console.log(response)
                     this.update();
                     App.updateWidgets();
                 }
@@ -106,7 +120,7 @@ class TransactionsPage {
                 if (!err) {
                     this.renderTitle(response.data.name);
                 }
-            })
+            }).catch(err => {console.log(err); return})
 
             Transaction.list({account_id}, (err, response) => {
                 if (!err) {
@@ -119,7 +133,7 @@ class TransactionsPage {
                         element.addEventListener("click", () => this.removeTransaction(id))
                     }) 
                 }
-            })
+            }).catch(err => {console.log(err); return})
         }
     }
 

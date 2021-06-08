@@ -47,7 +47,7 @@ class User {
                 else this.unsetCurrent();
                 callback(err, response);
             },
-        })
+        }).catch(err => console.log(err))
     }
 
   /**
@@ -67,7 +67,7 @@ class User {
                 }
                 callback(err, response);
             }
-        });
+        }).catch(err => console.log(err));
     }
 
   /**
@@ -87,7 +87,7 @@ class User {
                 callback(err, response);
             },
             data,
-        })
+        }).catch(err => console.log(err));
     }
 
   /**
@@ -105,7 +105,7 @@ class User {
                 callback(err, response);
             },
             data, 
-        })
+        }).catch(err => console.log(err))
     }
 
 }

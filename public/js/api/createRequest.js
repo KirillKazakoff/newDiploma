@@ -27,47 +27,43 @@ const createRequest = (options = {}) => {
     }
     else result = data;
 
-    const xhr = new XMLHttpRequest;
-    try {
+    
+    // fetch()
+
+
+    return new Promise((resolve, reject) => {
+        
+        const xhr = new XMLHttpRequest;
         xhr.open(method, url)
         xhr.responseType = "json";
-        xhr.withCredentials = true;
-        console.log(xhr);
         xhr.send(result);
         
-        xhr.addEventListener("load", () => {
-            try {
-                // console.log(xhr.responseURL);
-                if (xhr.response.success == true) {
-                    callback(null, xhr.response) 
-                }
-                else throw new Error(xhr.response.error)
+        xhr.onload = () => {
+            if (xhr.response.success) {
+                callback(null, xhr.response)
+                resolve(xhr.response)
             }
-            catch(e) {
-                callback(e)
+            else {
+                reject(xhr.response.error)
             }
-        })
-    }
-    catch(e) {
-        console.log(e.message);
-    }
+        }
+
+        xhr.onerror = () => {
+            reject(new Error("Network Error"))
+        }
+
+        // xhr.addEventListener("load", () => {
+        //     if (xhr.response.success == true) {
+        //         callback(null, xhr.response) 
+        //     }
+        //     else callback(new Error(xhr.response.error))
+        // })
+        // xhr.addEventListener("error", (e) => {
+        //     console.log(e.type)
+        //     throw new Error("net error");
+        // })
+
+    })
 
 }
 
-
-
-
-        // xhr.addEventListener("readystatechange", () => {
-        //     if (xhr.readyState == 4 && xhr.status > 210) {
-        //         console.log("something");
-        //         xhr.abort();
-        //     }
-        // })
-
-
-        // const entries = result.entries();
-        // for (let item of entries) {
-        //     const key = item[ 0 ],
-        //     value = item[ 1 ];
-        //     console.log(`${key}: ${value}`);
-        // }
