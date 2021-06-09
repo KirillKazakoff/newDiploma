@@ -1,69 +1,63 @@
 "use strict"
-/**
- * Основная функция для совершения запросов
- * на сервер.
- * */
 
-
-const createRequest = (options = {}) => {
-    let {url, callback, data, method} = options;
+const createRequest = async (options = {}) => {
+    let {url, body, method} = options;
     let result = null; 
 
     if (method == "GET") {
-        let newUrl = null;
+        let newUrl = `${url}/${body}`;
 
-        if (typeof data == "object"){
+        if (typeof body == "object") {  
             newUrl = new URL(url, 'http://localhost:8000');
-    
-            for (let prop in data) {
-                newUrl.searchParams.append(prop, data[prop]);
+            
+            for (let prop in body) {
+                newUrl.searchParams.append(prop, body[prop]);
             }
         }
-        else {
-           newUrl = `${url}/${data}`;
-        }
 
-        url = data ? newUrl : url;
+        url = body ? newUrl : url;
     }
-    else result = data;
-
-    
-    // fetch()
+    else result = body;
 
 
-    return new Promise((resolve, reject) => {
-        
-        const xhr = new XMLHttpRequest;
-        xhr.open(method, url)
-        xhr.responseType = "json";
-        xhr.send(result);
-        
-        xhr.onload = () => {
-            if (xhr.response.success) {
-                callback(null, xhr.response)
-                resolve(xhr.response)
-            }
-            else {
-                reject(xhr.response.error)
-            }
-        }
-
-        xhr.onerror = () => {
-            reject(new Error("Network Error"))
-        }
-
-        // xhr.addEventListener("load", () => {
-        //     if (xhr.response.success == true) {
-        //         callback(null, xhr.response) 
-        //     }
-        //     else callback(new Error(xhr.response.error))
-        // })
-        // xhr.addEventListener("error", (e) => {
-        //     console.log(e.type)
-        //     throw new Error("net error");
-        // })
-
-    })
-
+    const request = new Request(url, {method, body: result});
+    let response = await fetch(request);
+    let json = await response.json();
+    return json;
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    // return getResponse(request).catch(() => {
+    //     setTimeout(() => {
+    //         console.clear()
+    //         return getResponse(request);
+    //     }, 400);
+    // })
+
+
+    // async function getResponse(request) {
+    //     let response = await fetch(request);
+    //     let result = await response.json();
+    //     return result;
+    // }

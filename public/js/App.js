@@ -16,8 +16,17 @@ class App {
         this.initUser();
     }
 
-    static initUser() {
-        User.fetch(() => this.setState(User.current() ? "user-logged" : "init"));
+    static async initUser() {
+        const result = await User.fetch();
+
+        if (result.user) {
+            User.setCurrent(result.user);
+        }
+        else {
+            User.unsetCurrent();
+        }
+
+        this.setState(User.current() ? "user-logged" : "init")
     }
 
     static initPages() {
@@ -115,21 +124,14 @@ class App {
 
 
 
-
-    // static async updateWidgets() {
-    //     this.getWidget("user").update();
-    //     this.getWidget("accounts").update().then(() => {
-    //         return;
-    //     })
-    // }
     
     static async updateWidgets() {
         this.getWidget("user").update();
-        return await this.getWidget("accounts").update();
+        return await this.getWidget("accounts").update(); //почему эта строчка не идентична закоментированной?
         
-        this.getWidget("accounts").update().then(() => {
-            return;
-        }) // ????
+        // this.getWidget("accounts").update().then(() => {
+        //     return;
+        // }) 
     }
 
     static updateForms() {

@@ -1,8 +1,6 @@
 "use strict"
 
 class AccountsWidget {
-
-
     constructor(element) {
         if (!element) {
             throw new Error("empty data");
@@ -11,100 +9,63 @@ class AccountsWidget {
         this.accounts, this.activeAccount;
 
         this.update();
+        this.registerEvents();
     }
 
 
     registerEvents() {
-        const createButton = document.querySelector(".create-account");
-        createButton.addEventListener("click", () => {
-            const modal = App.getModal("createAccount");
-            modal.open();
-        })
-        
-        this.getAccounts();
-        this.accounts.forEach(account => {
-            account.addEventListener("click", () => this.onSelectAccount(account))
-        })
-    }
+        this.element.addEventListener("click", (event) => {
+            const {target} = event;
+            const element = target.closest("li");
 
-    getAccounts() {
-        this.accounts = document.querySelectorAll(".account");
-        this.activeAccount = document.querySelector(".active account");
+            if (element.className == "account") {
+                this.onSelectAccount(element);
+            }
+            else if (target.classList.contains("create-account")) {
+                App.getModal("createAccount").open();
+            }
+
+        })
     }
 
     onSelectAccount(account) {
         const {id} = account.dataset;
+        const activeAccount = document.querySelector(".account.active")
 
-        if (this.activeAccount) {
-            this.toggleActive();
+        if (activeAccount) {
+            this.toggleActive(activeAccount);
         }
-        this.activeAccount = account;
-        this.toggleActive();
+        
+        this.toggleActive(account);
         App.showPage('transactions', {account_id: id});
     }
 
-    toggleActive() {
-        this.activeAccount.classList.toggle("active")
+    toggleActive(account) {
+        account.classList.toggle("active");
     }
-
-    // update() {
-    //     return new Promise((resolve, reject) => {
-    //         const user = User.current();
-
-    //         Account.list(user, (err, response) => {
-    //             if (!err) {
-    //                 const {data} = response;
-    //                 this.clear()
-    //                 data.forEach(element => {
-    //                     const code = this.getAccountHTML(element)
-    //                     this.renderItem(code);
-    //                 })
-    //                 this.registerEvents();
-    //                 resolve(response);
-    //             }
-    //             else {
-    //                 reject(err);
-    //             }
-    //         })
-
-    //     })
-    // }
-
-
-
 
     async update() {
         const user = User.current();
-        let promise = new Promise((resolve, reject) => {
+        const result = await Account.list(user);
 
-            Account.list(user, (err, response) => {
-                if (!err) {
-                    const {data} = response;
-                    this.clear()
-                    data.forEach(element => {
-                        const code = this.getAccountHTML(element)
-                        this.renderItem(code);
-                    })
-                    this.registerEvents();
-                    resolve(response)
-                }
-                else {
-                    reject(err)
-                }
-            }).catch(err => console.log(err));
+        if (result.success) {
+            const {data} = result;
+            this.clear()
+            data.forEach(element => {
+                const code = this.getAccountHTML(element)
+                this.renderItem(code);
+            })
+        }
+        else {
+            console.log("something went wrong");
+        }
 
-        })
-
-        let result = await promise;
-        return result;
     }
 
-
-
-
     clear() {
-        this.getAccounts();
-        this.accounts.forEach(element => {
+        const accounts = document.querySelectorAll(".account");
+
+        accounts.forEach(element => {
             element.remove();
         });
     }
@@ -122,7 +83,7 @@ class AccountsWidget {
     }
 
     renderItem(data){
-        this.element.insertAdjacentHTML("afterBegin", data);
+        this.element.insertAdjacentHTML("beforeEnd", data);
     }
 }
 

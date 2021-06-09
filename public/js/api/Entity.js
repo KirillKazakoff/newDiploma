@@ -3,30 +3,31 @@
 class Entity {
     static URL = "";
 
-    static list(data, callback) {
+    static async list(data) {
         return createRequest({
+            url: this.URL,
             method: "GET",
-            callback: callback,
-            url: this.URL,
-            data
-        }).catch(err => console.log(err))
+            body: data,
+        })
+        .catch(err => console.log(err))
     }
 
-    static create(data, callback) {
-        createRequest({
+    static async create(data) {
+        return createRequest({
+            url: this.URL,
             method: "PUT",
-            url: this.URL,
-            callback: callback,
-            data
+            body: data,
         })
+        .catch(err => console.log(err))
     }
 
-    static remove(data, callback) {
-        createRequest({
-            method: "DELETE",
-            callback: callback,
+    static async remove(data) {
+        return createRequest({
             url: this.URL,
-            data
+            method: "DELETE",
+            body: data,
         })
+        .catch(err => console.log(err))
     }
+
 }

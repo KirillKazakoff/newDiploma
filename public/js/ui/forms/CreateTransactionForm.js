@@ -7,16 +7,17 @@ class CreateTransactionForm extends AsyncForm {
         this.renderAccountsList()
     }
 
-    renderAccountsList() {
+    async renderAccountsList() {
         const user = User.current();
+        const result = await Account.list(user);
 
-        Account.list(user, (err, response) => {   
-            const accounts = response.data.map(account => {
+        if (result.success) {
+            const accounts = result.data.map(account => {
                 return this.renderAccount(account);
             })
             const selectField = this.element.account_id;
             selectField.innerHTML = accounts.join("");
-        })
+        }
 
     }
 
@@ -25,19 +26,19 @@ class CreateTransactionForm extends AsyncForm {
         return `<option value="${id}">${name}</option>`;
     }
 
-    onSubmit(data) {
+    async onSubmit(data) { 
+        const result = await Transaction.create(data);
+
+        if (result.success) {
+            const type = this.element.id.includes("income") ?
+                "newIncome" : "newExpense";
+            const modal = App.getModal(type)
+
+            this.element.reset();
+            modal.close();
+            App.update()
+        }
         
-        Transaction.create(data, (err) => {
-            if (!err) {
-                const type = this.element.id.includes("income") ?
-                    "newIncome" : "newExpense";
-                const modal = App.getModal(type)
-
-                this.element.reset();
-                modal.close();
-                App.update()
-            }
-        });
-
     }
+
 }

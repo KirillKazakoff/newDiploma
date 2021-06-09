@@ -1,29 +1,23 @@
-/**
- * Класс LoginForm управляет формой
- * входа в портал
- * */
+
 class LoginForm extends AsyncForm {
-  /**
-   * Производит авторизацию с помощью User.login
-   * После успешной авторизации, сбрасывает форму,
-   * устанавливает состояние App.setState( 'user-logged' ) и
-   * закрывает окно, в котором находится форма
-   * */
-    onSubmit(data) {
 
-        User.login(data, (err) => {
-            if (!err) {
-                const form = App.getForm("login").element;
-                form.reset();
-                App.setState('user-logged');
+    async onSubmit(data) {
+        const result = await User.login(data);
 
-                const modal = App.getModal("login");
-                modal.close();
-            }
-            else {
-                alert(err.message);
-            }
-        })
+        if (result.success) {
+            User.setCurrent(result.user);
+
+            const form = this.element;
+            form.reset();
+            App.setState('user-logged');
+
+            const modal = App.getModal("login");
+            modal.close();
+        }
+        else {
+            alert(result.error);
+        }
 
     }
+
 }

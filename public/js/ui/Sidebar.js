@@ -23,16 +23,21 @@ class Sidebar {
                 const buttonClass = button.className.split('_').pop();
                 
                 if (buttonClass == "logout") {
-                    const user = User.current();
-                    User.logout(user, (err, response) => {
-                        err ? err : App.setState('init')
-                        if (response.success) App.setState('init')
-                    })
+                    (async () => {
+                        const user = User.current();
+                        const result = await User.logout(user);
+    
+                        if (result.success) {
+                            User.unsetCurrent(user);
+                            App.setState('init')
+                        }    
+                    })();
                 }
                 else {
                     const modal = App.getModal(buttonClass);
                     modal.open();
                 }
+
             })
         })
     }

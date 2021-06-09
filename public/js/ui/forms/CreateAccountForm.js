@@ -1,63 +1,31 @@
-// "use strict"
-
-// class CreateAccountForm extends AsyncForm {
-
-//     onSubmit(data) {
-//         Account.create(data, (err, response) => {
-//             if (!err) {
-//                 const modal = App.getModal('createAccount');
-//                 modal.close();
-        
-//                 const form = App.getForm("createAccount").element;
-//                 form.reset();
-                
-//                 App.updateForms()
-
-//                 App.updateWidgets().then(() => {
-//                     const {id} = response.account;
-//                     const account = document.querySelector(`.account[data-id="${id}"]`);
-//                     const event = new Event("click");
-
-//                     account.dispatchEvent(event);
-//                 })
-//             }
-//             else {
-//                 alert("Такой счет уже существует");  
-//             }
-//         });          
-//     }
-
-
-// }
-
 "use strict"
 
 class CreateAccountForm extends AsyncForm {
 
-    onSubmit(data) {
-        Account.create(data, (err, response) => {
-            if (!err) {
-                const modal = App.getModal('createAccount');
-                modal.close();
-        
-                const form = App.getForm("createAccount").element;
-                form.reset();
-                
-                App.updateForms()
+    async onSubmit(data) {
+        const result = await Account.create(data);
 
-                App.updateWidgets().then(() => {
-                    const {id} = response.account;
-                    const account = document.querySelector(`.account[data-id="${id}"]`);
-                    const event = new Event("click");
+        if (result.success) {            
+            const modal = App.getModal('createAccount');
+            modal.close();
+    
+            const form = this.element;
+            form.reset();
+            
+            App.updateForms()
 
-                    account.dispatchEvent(event);
-                })
-            }
-            else {
-                alert("Такой счет уже существует");  
-            }
-        });          
+            App.updateWidgets().then(() => {
+                const {id} = result.account;
+                const account = document.querySelector(`.account[data-id="${id}"]`);
+                const event = new Event("click", {bubbles: true});
+
+                account.dispatchEvent(event);
+            })
+        }
+        else {
+            alert("Такой счет уже существует");  
+        }
+
     }
-
 
 }
