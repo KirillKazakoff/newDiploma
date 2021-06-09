@@ -21,9 +21,15 @@ const createRequest = async (options = {}) => {
 
 
     const request = new Request(url, {method, body: result});
-    let response = await fetch(request);
-    let json = await response.json();
-    return json;
+    
+    try {
+        let response = await fetch(request);
+        let json = await response.json();
+        return json;
+    }
+    catch(err) {
+        return err;
+    }
 }
 
 
